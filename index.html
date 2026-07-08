@@ -1,0 +1,197 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+    <title>Color Blindness Simulator</title>
+
+    <link rel="stylesheet" href="style.css">
+
+    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700&display=swap"
+        rel="stylesheet">
+
+</head>
+
+<body>
+
+    <div class="container">
+
+        <!-- Header -->
+
+        <header>
+
+            <h1>🎨 Color Blindness Simulator</h1>
+
+            <p>
+                Upload an image and preview how it appears for different
+                types of color vision deficiencies.
+            </p>
+
+        </header>
+
+        <!-- Upload Section -->
+
+        <section class="upload-section">
+
+            <div class="upload-box" id="uploadBox">
+
+                <input
+                    type="file"
+                    id="upload"
+                    accept="image/*"
+                    hidden>
+
+                <h2>📂 Upload Image</h2>
+
+                <p>
+                    Click or drag an image here
+                </p>
+
+                <button id="uploadBtn">
+                    Choose Image
+                </button>
+
+            </div>
+
+        </section>
+
+        <!-- Image Information -->
+
+        <section class="image-info">
+
+            <div class="info-card">
+
+                <h3>📄 File Name</h3>
+
+                <p id="fileName">
+                    No Image Selected
+                </p>
+
+            </div>
+
+            <div class="info-card">
+
+                <h3>📏 Dimensions</h3>
+
+                <p id="dimensions">
+                    -
+                </p>
+
+            </div>
+
+            <div class="info-card">
+
+                <h3>💾 File Size</h3>
+
+                <p id="fileSize">
+                    -
+                </p>
+
+            </div>
+
+        </section>
+
+        <!-- Filter Buttons -->
+
+        <section class="controls">
+
+            <button class="mode-btn active"
+                data-mode="normal">
+                Normal
+            </button>
+
+            <button class="mode-btn"
+                data-mode="protanopia">
+                Protanopia
+            </button>
+
+            <button class="mode-btn"
+                data-mode="deuteranopia">
+                Deuteranopia
+            </button>
+
+            <button class="mode-btn"
+                data-mode="tritanopia">
+                Tritanopia
+            </button>
+
+            <button class="mode-btn"
+                data-mode="achromatopsia">
+                Achromatopsia
+            </button>
+
+        </section>
+
+        <!-- Comparison Area -->
+
+        <section class="viewer">
+
+            <div class="canvas-container">
+
+                <!-- Original Image -->
+
+                <canvas id="originalCanvas"></canvas>
+
+                <!-- Filtered Image -->
+
+                <canvas id="filteredCanvas"></canvas>
+
+                <!-- Divider -->
+
+                <div id="divider"></div>
+
+            </div>
+
+            <!-- Slider -->
+
+            <div class="slider-container">
+
+                <label>
+                    Compare Images
+                </label>
+
+                <input
+                    type="range"
+                    id="compareSlider"
+                    min="0"
+                    max="100"
+                    value="50">
+
+            </div>
+
+        </section>
+
+        <!-- Bottom Buttons -->
+
+        <section class="bottom-buttons">
+
+            <button id="downloadBtn">
+                📥 Download Image
+            </button>
+
+            <button id="resetBtn">
+                🔄 Reset
+            </button>
+
+        </section>
+
+        <!-- Footer -->
+
+        <footer>
+
+            <p>
+                Built using HTML, CSS, JavaScript & Canvas API
+            </p>
+
+        </footer>
+
+    </div>
+
+    <script src="script.js"></script>
+
+</body>
+
+</html>

@@ -35,9 +35,7 @@ let currentMode = "normal";
 // ==============================
 
 uploadBtn.addEventListener("click", () => {
-
     upload.click();
-
 });
 
 // ==============================
@@ -46,20 +44,17 @@ uploadBtn.addEventListener("click", () => {
 
 upload.addEventListener("change", function () {
 
-    if (this.files.length === 0)
-        return;
+    if (this.files.length === 0) return;
 
-    const file = this.files[0];
-
-    loadImage(file);
+    loadImage(this.files[0]);
 
 });
 
 // ==============================
-// Load Image Function
+// Load Image
 // ==============================
 
-function loadImage(file) {
+function loadImage(file){
 
     fileName.textContent = file.name;
 
@@ -68,9 +63,9 @@ function loadImage(file) {
 
     const reader = new FileReader();
 
-    reader.onload = function (event) {
+    reader.onload = function(e){
 
-        image.onload = function () {
+        image.onload = function(){
 
             originalCanvas.width = image.width;
             originalCanvas.height = image.height;
@@ -87,7 +82,7 @@ function loadImage(file) {
 
         }
 
-        image.src = event.target.result;
+        image.src = e.target.result;
 
     }
 
@@ -99,7 +94,7 @@ function loadImage(file) {
 // Draw Original Image
 // ==============================
 
-function drawOriginal() {
+function drawOriginal(){
 
     originalCtx.clearRect(
         0,
@@ -119,14 +114,14 @@ function drawOriginal() {
 }
 
 // ==============================
-// Button Selection
+// Mode Buttons
 // ==============================
 
-modeButtons.forEach(button => {
+modeButtons.forEach(button=>{
 
-    button.addEventListener("click", () => {
+    button.addEventListener("click",()=>{
 
-        modeButtons.forEach(btn => {
+        modeButtons.forEach(btn=>{
 
             btn.classList.remove("active");
 
@@ -141,13 +136,13 @@ modeButtons.forEach(button => {
     });
 
 });
-
 // ==============================
-// Placeholder
-// Part 2 will replace this
+// Apply Filter
 // ==============================
 
-function applyFilter(mode){
+function applyFilter(mode) {
+
+    if (!image.src) return;
 
     filteredCtx.clearRect(
         0,
@@ -164,12 +159,122 @@ function applyFilter(mode){
         filteredCanvas.height
     );
 
-}
-// ======================================
-// APPLY FILTER
-// ======================================
+    const imageData = filteredCtx.getImageData(
+        0,
+        0,
+        filteredCanvas.width,
+        filteredCanvas.height
+    );
 
-function applyFilter(mode){
+    const data = imageData.data;
+
+    for (let i = 0; i < data.length; i += 4) {
+
+        let r = data[i];
+        let g = data[i + 1];
+        let b = data[i + 2];
+
+        switch (mode) {
+
+            case "protanopia":
+
+                data[i]     = 0.567 * r + 0.433 * g;
+                data[i + 1] = 0.558 * r + 0.442 * g;
+                data[i + 2] = 0.242 * g + 0.758 * b;
+
+                break;
+
+            case "deuteranopia":
+
+                data[i]     = 0.625 * r + 0.375 * g;
+                data[i + 1] = 0.700 * r + 0.300 * g;
+                data[i + 2] = 0.300 * g + 0.700 * b;
+
+                break;
+
+            case "tritanopia":
+
+                data[i]     = 0.950 * r + 0.050 * g;
+                data[i + 1] = 0.433 * g + 0.567 * b;
+                data[i + 2] = 0.475 * g + 0.525 * b;
+
+                break;
+
+            case "achromatopsia":
+
+                let gray =
+                    0.299 * r +
+                    0.587 * g +
+                    0.114 * b;
+
+                data[i] = gray;
+                data[i + 1] = gray;
+                data[i + 2] = gray;
+
+                break;
+
+            case "normal":
+            default:
+                break;
+        }
+
+    }
+
+    filteredCtx.putImageData(imageData, 0, 0);
+
+}
+
+// ==============================
+// Compare Slider
+// ==============================
+
+slider.addEventListener("input", () => {
+
+    const value = slider.value;
+
+    filteredCanvas.style.clipPath =
+        `inset(0 ${100 - value}% 0 0)`;
+
+    divider.style.left = value + "%";
+
+});
+
+// ==============================
+// Download Image
+// ==============================
+
+downloadBtn.addEventListener("click", () => {
+
+    if (!image.src) return;
+
+    const link = document.createElement("a");
+
+    link.download = "filtered-image.png";
+
+    link.href = filteredCanvas.toDataURL("image/png");
+
+    link.click();
+
+});
+
+// ==============================
+// Reset
+// ==============================
+
+resetBtn.addEventListener("click", () => {
+
+    upload.value = "";
+
+    fileName.textContent = "No Image Selected";
+    fileSize.textContent = "-";
+    dimensions.textContent = "-";
+
+    originalCtx.clearRect(
+        0,
+        0,
+        originalCanvas.width,
+        originalCanvas.height
+    );
 
     filteredCtx.clearRect(
         0,
@@ -178,70 +283,18 @@ function applyFilter(mode){
         filteredCanvas.height
     );
 
-    filteredCtx.drawImage(image,0,0);
+    currentMode = "normal";
 
-    let imageData = filteredCtx.getImageData(
-        0,
-        0,
-        filteredCanvas.width,
-        filteredCanvas.height
-    );
+    modeButtons.forEach(btn => btn.classList.remove("active"));
 
-    let data = imageData.data;
+    modeButtons[0].classList.add("active");
 
-    for(let i=0;i<data.length;i+=4){
+    slider.value = 50;
 
-        let r = data[i];
-        let g = data[i+1];
-        let b = data[i+2];
+    divider.style.left = "50%";
 
-        switch(mode){
+    filteredCanvas.style.clipPath = "inset(0 50% 0 0)";
 
-            case "protanopia":
+    image = new Image();
 
-                data[i]   = 0.567*r + 0.433*g;
-                data[i+1] = 0.558*r + 0.442*g;
-                data[i+2] = 0.242*g + 0.758*b;
-
-            break;
-
-            case "deuteranopia":
-
-                data[i]   = 0.625*r + 0.375*g;
-                data[i+1] = 0.700*r + 0.300*g;
-                data[i+2] = 0.300*g + 0.700*b;
-
-            break;
-
-            case "tritanopia":
-
-                data[i]   = 0.950*r + 0.050*g;
-                data[i+1] = 0.433*g + 0.567*b;
-                data[i+2] = 0.475*g + 0.525*b;
-
-            break;
-
-            case "achromatopsia":
-
-                let gray =
-                    0.299*r +
-                    0.587*g +
-                    0.114*b;
-
-                data[i]=gray;
-                data[i+1]=gray;
-                data[i+2]=gray;
-
-            break;
-
-        }
-
-    }
-
-    filteredCtx.putImageData(
-        imageData,
-        0,
-        0
-    );
-
-}
+});
